@@ -7,16 +7,25 @@ class MyApplication < KO::Application
 end
 
 class MyObject < KO::Object
+  signal :something
+
+  # def on_ready do
+  #   pp("Ready #{id}")
+  # end
 end
 
-MyApplication["app"] do
+MyApplication[] do
   x = MyObject["first"] do
+    signal :blah
+
     MyObject["second"]
 
-    def blah = "blah"
+    on_ready do
+      pp("Ready #{id}")
+    end
   end
   t = MyObject["third"]
   t.parent = x
 end
 
-pp MyApplication.instance["first"].blah
+pp MyApplication.instance

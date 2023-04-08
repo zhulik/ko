@@ -7,9 +7,9 @@ module KO
       def instance = $_KO_APP
     end
 
-    def initialize(id: "app")
+    def initialize(id: nil)
       begin
-        super(id:)
+        super(id: id || "app")
       rescue InvalidParent
         @parent = nil
       end

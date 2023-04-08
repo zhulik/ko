@@ -2,16 +2,20 @@
 
 module KO
   class Object
+    extend Signals
+
     class << self
       def [](id = nil, &)
         new(id:).tap do |obj|
           obj.instance_exec(&) if block_given?
-          obj.ready
+          obj.ready.emit
         end
       end
     end
 
     attr_reader :id, :parent
+
+    signal :ready
 
     def initialize(id: nil)
       @id = id
@@ -38,8 +42,6 @@ module KO
 
     def [](id) = children[id]
 
-    def ready = nil
-
     def app
       @app ||= begin
         obj = self
@@ -50,7 +52,7 @@ module KO
 
     def inspect
       id_str = id.nil? ? "" : "[#{id.inspect}]"
-      "#<#{self.class}#{id_str} signals=0 properties=0 children=#{children.count}>"
+      "#<#{self.class}#{id_str} signals=#{signals.count} properties=0 children=#{children.count}>"
     end
 
     private

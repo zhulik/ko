@@ -25,6 +25,6 @@ RSpec.configure do |config|
 
   config.order = :random
 
-  config.include_context Async::RSpec::Reactor
-  config.include_context Async::RSpec::Leaks
+  config.include_context Async::RSpec::Reactor, async: true
+  config.include_context Async::RSpec::Leaks, async: true
 end

@@ -28,4 +28,5 @@ module KO
   end
 
   class UnknownChildError < Error; end
+  class EmitError < Error; end
 end

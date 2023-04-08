@@ -45,3 +45,6 @@ Style/NumberedParametersLimit:
 
 RSpec/EmptyExampleGroup:
   AutoCorrect: false
+
+RSpec/NestedGroups:
+  Max: 5
