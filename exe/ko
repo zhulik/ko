@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "ko"
+
+class MyApplication < KO::Application
+end
+
+class MyObject < KO::Object
+end
+
+MyApplication["app"] do
+  x = MyObject["first"] do
+    MyObject["second"]
+
+    def blah = "blah"
+  end
+  t = MyObject["third"]
+  t.parent = x
+end
+
+pp MyApplication.instance["first"].blah
