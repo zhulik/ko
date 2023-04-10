@@ -3,6 +3,7 @@
 RSpec.describe KO::Signals::Signal do
   let(:signal) { described_class.new(:something_changed, [String, String]) }
   let(:receiver) { double(on_something_changed: nil) } # rubocop:disable RSpec/VerifiedDoubles
+  let(:parent) { KO::Application.new }
 
   describe "#connect" do
     subject { signal.connect(callable) }
@@ -137,6 +138,38 @@ RSpec.describe KO::Signals::Signal do
         another_signal.connect(receiver)
         subject
         expect(receiver).to have_received(:on_another_signal).with("blah", "blah")
+      end
+    end
+  end
+
+  describe "#parent=" do
+    subject { signal.parent = obj }
+
+    context "when given object is KO::Object" do
+      let(:obj) { KO::Object.new(parent:) }
+
+      it "assigns a parent" do
+        expect { subject }.to change(signal, :parent).from(nil).to(obj)
+      end
+    end
+
+    context "when given object is not a KO::Object" do
+      let(:obj) { Object.new }
+
+      it "raises" do
+        expect { subject }.to raise_error(KO::InvalidParent)
+      end
+    end
+
+    context "when signal already has parent" do
+      let(:obj) { KO::Object.new(parent:) }
+
+      before do
+        signal.parent = obj
+      end
+
+      it "raises" do
+        expect { subject }.to raise_error(KO::SignalParentOverrideError)
       end
     end
   end

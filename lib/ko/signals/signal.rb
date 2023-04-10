@@ -3,7 +3,7 @@
 module KO
   module Signals
     class Signal
-      attr_reader :name, :arg_types, :connections
+      attr_reader :name, :arg_types, :connections, :parent
 
       def initialize(name, arg_types)
         @name = name
@@ -11,6 +11,13 @@ module KO
 
         @validator = Validator.new(self)
         @connections = {}
+      end
+
+      def parent=(obj)
+        raise KO::SignalParentOverrideError unless @parent.nil?
+        raise KO::InvalidParent unless obj.is_a?(KO::Object)
+
+        @parent = obj
       end
 
       def dup = super().tap { _1.connections.clear }

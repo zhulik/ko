@@ -1,17 +1,16 @@
 # frozen_string_literal: true
 
 RSpec.describe KO::Signals do
+  let!(:parent) { KO::Application.new }
   let(:klass) do
-    Class.new do
-      extend KO::Signals
-
+    Class.new(KO::Object) do
       signal :something_changed, String, String
 
       def emit_signal(*args) = emit(:something_changed, *args)
     end
   end
 
-  let(:object) { klass.new }
+  let(:object) { klass.new(parent:) }
 
   let(:receiver) { double(on_something_changed: nil) } # rubocop:disable RSpec/VerifiedDoubles
 
@@ -28,7 +27,7 @@ RSpec.describe KO::Signals do
       end
     end
 
-    context "when a subclass is used as an argument" do
+    context "when a subclass is used as an argument" do # rubocop:disable RSpec/MultipleMemoizedHelpers
       let(:my_string) { Class.new(String) }
       let(:args) { ["blah", my_string.new("123")] }
 

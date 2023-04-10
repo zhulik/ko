@@ -17,7 +17,11 @@ module KO
 
       private
 
-      def signals = @signals ||= self.class.signals.transform_values(&:dup)
+      def signals
+        @signals ||= self.class.signals.transform_values do |s|
+          s.dup.tap  { _1.parent = self }
+        end
+      end
 
       def emit(name, *args) = send(name).call(*args)
     end

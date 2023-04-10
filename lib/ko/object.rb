@@ -17,9 +17,9 @@ module KO
 
     signal :ready
 
-    def initialize(id: nil)
+    def initialize(id: nil, parent: nil)
       @id = id
-      self.parent = find_parent
+      self.parent = parent || find_parent
     end
 
     def children = @children ||= Children.new

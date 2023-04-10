@@ -27,4 +27,8 @@ RSpec.configure do |config|
 
   config.include_context Async::RSpec::Reactor, async: true
   config.include_context Async::RSpec::Leaks, async: true
+
+  config.after do
+    $_KO_APP = nil # rubocop:disable Style/GlobalVars
+  end
 end
