@@ -42,13 +42,7 @@ module KO
 
     def [](id) = children[id]
 
-    def app
-      @app ||= begin
-        obj = self
-        obj = obj.parent until obj.parent.nil?
-        obj
-      end
-    end
+    def app = $_KO_APP # rubocop:disable Style/GlobalVars
 
     def inspect
       id_str = id.nil? ? "" : "[#{id.inspect}]"
