@@ -2,7 +2,12 @@
 
 RSpec.describe KO::Signals::Signal do
   let(:signal) { described_class.new(:something_changed, [String, String]) }
-  let(:receiver) { double(on_something_changed: nil) } # rubocop:disable RSpec/VerifiedDoubles
+
+  let(:receiver) do
+    Class.new(KO::Object) do
+      def on_something_changed(_a, _b) = nil # rubocop:disable Naming/MethodParameterName
+    end.new
+  end
 
   describe "#connect" do
     subject { signal.connect(callable) }
@@ -107,9 +112,9 @@ RSpec.describe KO::Signals::Signal do
 
     context "when has one shot connection" do
       it "notifies receiver" do
+        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
         signal.connect(receiver, one_shot: true)
         subject
-        expect(receiver).to have_received(:on_something_changed)
       end
 
       it "removes the connection" do
@@ -122,21 +127,21 @@ RSpec.describe KO::Signals::Signal do
 
     context "when connected to an object" do
       it "notifies receiver" do
+        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
         signal.connect(receiver)
         subject
-        expect(receiver).to have_received(:on_something_changed)
       end
     end
 
     context "when connected to a signal" do
       let(:another_signal) { described_class.new(:another_signal, [String, String]) }
-      let(:receiver) { double(on_another_signal: nil) } # rubocop:disable RSpec/VerifiedDoubles
 
       it "notifies receiver" do
+        expect(receiver).to receive(:on_another_signal).with("blah", "blah") # rubocop:disable RSpec/MessageSpies
+
         signal.connect(another_signal)
         another_signal.connect(receiver)
         subject
-        expect(receiver).to have_received(:on_another_signal).with("blah", "blah")
       end
     end
   end

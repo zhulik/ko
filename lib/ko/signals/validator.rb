@@ -21,11 +21,13 @@ module KO
       end
 
       def validate_callable_type!(callable)
-        return callable if callable.is_a?(Signal) || callable.is_a?(Method)
+        if callable.is_a?(Signal) ||
+           (callable.is_a?(Method) && callable.receiver.is_a?(KO::Object)) ||
+           (callable.is_a?(KO::Object) && callable.respond_to?(@signal.receiver_name))
+          return callable
+        end
 
-        return callable.method(@signal.receiver_name) if callable.respond_to?(@signal.receiver_name)
-
-        raise ArgumentError, "callable must be a Signal, a Method, or must respond to #{@signal.receiver_name}"
+        raise ArgumentError, "callable must be a Signal or a KO::Object's method, given: #{callable.class}"
       end
 
       private

@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe KO::Signals do
-  let(:klass) do
+  let(:object) do
     Class.new(KO::Object) do
       signal :something_changed, String, String
-    end
+    end.new
   end
 
-  let(:object) { klass.new }
-
-  let(:receiver) { double(on_something_changed: nil) } # rubocop:disable RSpec/VerifiedDoubles
+  let(:receiver) do
+    Class.new(KO::Object) do
+      def on_something_changed = nil
+    end.new
+  end
 
   describe "emitting signals" do
     subject { object.something_changed.emit(*args) }
@@ -18,9 +20,9 @@ RSpec.describe KO::Signals do
       let(:args) { ["blah", "blah"] }
 
       it "notifies subscribers" do
+        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
         object.something_changed.connect(receiver)
         subject
-        expect(receiver).to have_received(:on_something_changed)
       end
     end
 
@@ -29,9 +31,9 @@ RSpec.describe KO::Signals do
       let(:args) { ["blah", my_string.new("123")] }
 
       it "notifies subscribers" do
+        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
         object.something_changed.connect(receiver)
         subject
-        expect(receiver).to have_received(:on_something_changed)
       end
     end
 
