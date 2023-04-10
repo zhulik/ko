@@ -10,11 +10,9 @@ RSpec.describe KO::Signals::Signal do
   end
 
   describe "#connect" do
-    subject { signal.connect(callable) }
+    subject { signal.connect(receiver) }
 
     context "when connected to an object" do
-      let(:callable) { receiver }
-
       it "connects" do
         expect { subject }.to change { signal.connections.count }.from(0).to(1)
       end
@@ -25,7 +23,7 @@ RSpec.describe KO::Signals::Signal do
     end
 
     context "when connected to a method" do
-      let(:callable) { receiver.method(:on_something_changed) }
+      let(:receiver) { super().method(:on_something_changed) }
 
       it "connects" do
         expect { subject }.to change { signal.connections.count }.from(0).to(1)
@@ -38,7 +36,7 @@ RSpec.describe KO::Signals::Signal do
 
     context "when connecting to another signal" do
       context "when signal's arity fits" do
-        let(:callable) { described_class.new(:another_signal, [String, String]) }
+        let(:receiver) { described_class.new(:another_signal, [String, String]) }
 
         it "connects" do
           expect { subject }.to change { signal.connections.count }.from(0).to(1)
@@ -50,7 +48,7 @@ RSpec.describe KO::Signals::Signal do
       end
 
       context "when signal's arity does not fit" do
-        let(:callable) { described_class.new(:another_signal, [String]) }
+        let(:receiver) { described_class.new(:another_signal, [String]) }
 
         it "raises an exception" do
           expect { subject }.to raise_error(ArgumentError)
@@ -58,8 +56,8 @@ RSpec.describe KO::Signals::Signal do
       end
     end
 
-    context "when connecting to a non-callable" do
-      let(:callable) { "foo" }
+    context "when connecting to a non-receiver" do
+      let(:receiver) { "foo" }
 
       it "raises an exception" do
         expect { subject }.to raise_error ArgumentError
@@ -68,12 +66,10 @@ RSpec.describe KO::Signals::Signal do
   end
 
   describe "#disconnect" do
-    subject { signal.disconnect(callable) }
+    subject { signal.disconnect(receiver) }
 
     context "when argument is an object" do
-      let(:callable) { receiver }
-
-      before { signal.connect(callable) }
+      before { signal.connect(receiver) }
 
       it "unsubscribes" do
         expect { subject }.to change { signal.connections.count }.from(1).to(0)
@@ -81,9 +77,9 @@ RSpec.describe KO::Signals::Signal do
     end
 
     context "when argument is a signal" do
-      let(:callable) { described_class.new(:another_signal, [String, String]) }
+      let(:receiver) { described_class.new(:another_signal, [String, String]) }
 
-      before { signal.connect(callable) }
+      before { signal.connect(receiver) }
 
       it "unsubscribes" do
         expect { subject }.to change { signal.connections.count }.from(1).to(0)
@@ -91,18 +87,16 @@ RSpec.describe KO::Signals::Signal do
     end
 
     context "when argument is invalid" do
-      let(:callable) { "blah" }
+      let(:receiver) { "blah" }
 
       it "raises an exception" do
-        expect { subject }.to raise_error(ArgumentError, "given callable is not connected to this signal")
+        expect { subject }.to raise_error(ArgumentError)
       end
     end
 
     context "when argument was not subscribed" do
-      let(:callable) { receiver }
-
       it "raises an exception" do
-        expect { subject }.to raise_error(ArgumentError, "given callable is not connected to this signal")
+        expect { subject }.to raise_error(ArgumentError)
       end
     end
   end

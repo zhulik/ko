@@ -15,19 +15,19 @@ module KO
         raise KO::EmitError, "expected args: #{@signal.arg_types}. given: #{types}"
       end
 
-      def validate_callable!(callable)
-        callable = validate_callable_type!(callable)
-        validate_signal_arity!(callable) if callable.is_a?(Signal)
+      def validate_receiver!(receiver)
+        receiver = validate_receiver_type!(receiver)
+        validate_signal_arity!(receiver) if receiver.is_a?(Signal)
       end
 
-      def validate_callable_type!(callable)
-        if callable.is_a?(Signal) ||
-           (callable.is_a?(Method) && callable.receiver.is_a?(KO::Object)) ||
-           (callable.is_a?(KO::Object) && callable.respond_to?(@signal.receiver_name))
-          return callable
+      def validate_receiver_type!(receiver)
+        if receiver.is_a?(Signal) ||
+           (receiver.is_a?(Method) && receiver.receiver.is_a?(KO::Object)) ||
+           (receiver.is_a?(KO::Object) && receiver.respond_to?(@signal.receiver_name))
+          return receiver
         end
 
-        raise ArgumentError, "callable must be a Signal or a KO::Object's method, given: #{callable.class}"
+        raise ArgumentError, "receiver must be a Signal or a KO::Object's method, given: #{receiver.class}"
       end
 
       private

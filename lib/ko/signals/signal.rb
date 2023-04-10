@@ -24,19 +24,14 @@ module KO
 
       def receiver_name = "on_#{name}".to_sym
 
-      # Only 3 ways to connect:
-      # some_object.some_signal.connect(receiver) -> receiver#on_some_signal
-      # some_object.some_signal.connect(receiver.method(:do_something)) -> receiver#do_something
-      # some_object.some_signal.connect(receiver.another_signal) ->  emits receiver#another_signal
-      # Blocks, Procs and Lambda are not supported on purpose
-      def connect(callable = nil, mode: :direct, one_shot: false)
-        @validator.validate_callable!(callable)
+      def connect(receiver = nil, mode: :direct, one_shot: false)
+        @validator.validate_receiver!(receiver)
 
-        Connection.new(callable, self, mode:, one_shot:).tap { @connections[callable] = _1 }
+        Connection.new(receiver, self, mode:, one_shot:).tap { @connections[receiver] = _1 }
       end
 
-      def disconnect(callable)
-        raise ArgumentError, "given callable is not connected to this signal" if @connections.delete(callable).nil?
+      def disconnect(receiver)
+        raise ArgumentError, "given receiver is not connected to this signal" if @connections.delete(receiver).nil?
       end
 
       def emit(*args)

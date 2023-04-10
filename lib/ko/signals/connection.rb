@@ -3,12 +3,12 @@
 module KO
   module Signals
     class Connection
-      attr_reader :callable, :mode, :signal
+      attr_reader :receiver, :mode, :signal
 
-      def initialize(callable, signal, mode:, one_shot:)
-        Validator.new(signal).validate_callable_type!(callable)
+      def initialize(receiver, signal, mode:, one_shot:)
+        Validator.new(signal).validate_receiver_type!(receiver)
 
-        @callable = callable
+        @receiver = receiver
         @signal = signal
         @mode = mode
         @one_shot = one_shot
@@ -17,15 +17,15 @@ module KO
       def one_shot? = @one_shot
 
       def call(*args, force_direct: false) # rubocop:disable Lint/UnusedMethodArgument
-        return @callable.call(*args) if @callable.is_a?(Method) || @callable.is_a?(Signal)
+        return @receiver.call(*args) if @receiver.is_a?(Method) || @receiver.is_a?(Signal)
 
-        @callable.send(signal.receiver_name, *args)
+        @receiver.send(signal.receiver_name, *args)
       rescue StandardError => e
         warn(e)
       end
 
       def disconnect
-        @signal.disconnect(@callable)
+        @signal.disconnect(@receiver)
       end
     end
   end
