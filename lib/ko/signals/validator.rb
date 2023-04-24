@@ -32,7 +32,12 @@ module KO
 
       private
 
-      def types_match?(types) = types.each.with_index.all? { _1.ancestors.include?(@signal.arg_types[_2]) }
+      def types_match?(types)
+        types.each.with_index.all? do |klass, i|
+          valid_types = [@signal.arg_types[i]].flatten
+          valid_types.any? { klass.ancestors.include?(_1) }
+        end
+      end
 
       def validate_signal_arity!(signal)
         return if signal.arg_types == @signal.arg_types
