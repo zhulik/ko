@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module KO
-  module Attributes
-    def attribute(name, type, value: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  module Properties
+    def property(name, type, value: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       types = [type].flatten
       value ||= type.new if type.is_a?(Class)
 
