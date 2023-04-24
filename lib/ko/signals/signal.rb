@@ -24,7 +24,8 @@ module KO
 
       def receiver_name = "on_#{name}".to_sym
 
-      def connect(receiver = nil, mode: :direct, one_shot: false)
+      def connect(receiver, mode: :direct, one_shot: false)
+        receiver = parent.method(receiver) if receiver.is_a?(Symbol)
         @validator.validate_receiver!(receiver)
 
         raise "ALREADY CONNECTED" if @connections.include?(receiver)
