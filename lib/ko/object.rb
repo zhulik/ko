@@ -3,6 +3,7 @@
 module KO
   class Object
     extend Signals
+    extend Attributes
 
     class << self
       def [](id = nil, &)

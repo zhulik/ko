@@ -20,12 +20,14 @@ module KO
         @parent = obj
       end
 
-      def dup = super().tap { _1.connections.clear }
+      def dup = self.class.new(name, arg_types)
 
       def receiver_name = "on_#{name}".to_sym
 
       def connect(receiver = nil, mode: :direct, one_shot: false)
         @validator.validate_receiver!(receiver)
+
+        raise "ALREADY CONNECTED" if @connections.include?(receiver)
 
         Connection.new(receiver, self, mode:, one_shot:).tap { @connections[receiver] = _1 }
       end
@@ -39,7 +41,7 @@ module KO
         notify_subscribers(args)
       end
 
-      def inspect = "#<#{self.class}[#{name.inspect}] connections=#{@connections.count}>"
+      def inspect = "#<#{self.class}@#{object_id}[#{name.inspect}] connections=#{@connections.count}>"
 
       def call(...) = emit(...)
 

@@ -14,18 +14,30 @@ class MyObject < KO::Object
   # end
 end
 
-MyApplication[] do
-  x = MyObject["first"] do
-    signal :blah
-
-    MyObject["second"]
-
+KO::Application[] do
+  KO::Object["1"] do
     on_ready do
       pp("Ready #{id}")
     end
+
+    KO::Object["11"] do
+      on_ready do
+        pp("Ready #{id}")
+      end
+    end
   end
-  t = MyObject["third"]
-  t.parent = x
+
+  KO::Object["2"] do
+    on_ready do
+      pp("Ready #{id}")
+    end
+
+    KO::Object["22"] do
+      on_ready do
+        pp("Ready #{id}")
+      end
+    end
+  end
 end
 
 pp MyApplication.instance
