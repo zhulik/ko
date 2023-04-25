@@ -6,8 +6,8 @@ module KO
     extend Properties
 
     class << self
-      def [](id = nil, &)
-        new(id:).tap do |obj|
+      def [](id = nil, parent = nil, &)
+        new(id:, parent:).tap do |obj|
           obj.instance_exec(&) if block_given?
           obj.ready.emit
         end

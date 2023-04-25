@@ -19,6 +19,8 @@ module KO
       @store.delete(obj)
     end
 
+    def to_a = @store.to_a
+
     def inspect = to_a.inspect
     def pretty_inspect = to_a.pretty_inspect
 

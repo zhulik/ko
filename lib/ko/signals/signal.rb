@@ -38,6 +38,8 @@ module KO
       end
 
       def emit(*args)
+        return if @connections.empty?
+
         @validator.validate_args!(args)
         notify_subscribers(args)
       end
