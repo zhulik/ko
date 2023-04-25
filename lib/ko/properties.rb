@@ -2,27 +2,29 @@
 
 module KO
   module Properties
-    def property(name, type, value: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def property(name, type, value: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       types = [type].flatten
       value ||= type.new if type.is_a?(Class)
 
       raise TypeError if types.none? { value.is_a?(_1) }
 
       signal :"#{name}_changed", type
-      var_name = "@#{name}"
 
       define_method(name) do
-        return instance_variable_get(var_name) if instance_variable_defined?(var_name)
+        @properties ||= {}
+        return @properties[name] if @properties.key?(name)
 
-        instance_variable_set(var_name, value)
+        @properties[name] = value
+        value
       end
 
       define_method("#{name}=") do |new_value|
+        @properties ||= {}
         raise TypeError if types.none? { value.is_a?(_1) }
 
-        return new_value if new_value == instance_variable_get(var_name)
+        return new_value if new_value == @properties[name]
 
-        instance_variable_set(var_name, new_value)
+        @properties[name] = new_value
         signals[:"#{name}_changed"].emit(new_value)
         new_value
       end
