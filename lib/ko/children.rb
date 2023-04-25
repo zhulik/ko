@@ -5,13 +5,13 @@ module KO
     include Enumerable
 
     def initialize
-      @store = Set.new
+      @store = {}
     end
 
     # TODO: use index
     def [](id) = @store.find { _1.id == id }
 
-    def add(obj) = @store << obj
+    def add(obj) = @store[obj] = obj
 
     def remove(obj)
       raise UnknownChildError unless @store.include?(obj)
@@ -19,12 +19,12 @@ module KO
       @store.delete(obj)
     end
 
-    def to_a = @store.to_a
+    def to_a = @store.keys
 
     def inspect = to_a.inspect
     def pretty_inspect = to_a.pretty_inspect
 
-    def each(...) = @store.each(...)
+    def each(...) = @store.each_key(...)
     def count(...) = @store.count(...)
   end
 end

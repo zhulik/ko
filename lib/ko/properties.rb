@@ -12,10 +12,7 @@ module KO
 
       define_method(name) do
         @properties ||= {}
-        return @properties[name] if @properties.key?(name)
-
-        @properties[name] = value
-        value
+        @properties[name] ||= value
       end
 
       define_method("#{name}=") do |new_value|
@@ -28,6 +25,19 @@ module KO
         signals[:"#{name}_changed"].emit(new_value)
         new_value
       end
+    end
+
+    module InstanceMethods
+      def bind(prop_name, from, from_prop_name)
+        setter = method("#{prop_name}=")
+        setter.call(from.send(from_prop_name))
+
+        from.send("#{from_prop_name}_changed").connect(setter)
+      end
+    end
+
+    def self.extended(base)
+      base.include(InstanceMethods)
     end
   end
 end

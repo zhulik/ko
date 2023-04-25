@@ -10,9 +10,10 @@ module KO
         sigs = signals.each.with_object({}) { |(_k, v), acc| acc[v.receiver_name] = v }
         super unless sigs.include?(name)
 
-        define_singleton_method(name, &)
+        method_name = SecureRandom.hex
+        define_singleton_method(method_name, &)
 
-        sigs[name].connect(self)
+        sigs[name].connect(method_name.to_sym)
       end
 
       private

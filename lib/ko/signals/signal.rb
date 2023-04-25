@@ -49,7 +49,7 @@ module KO
       def call(...) = emit(...)
 
       def notify_subscribers(args)
-        @connections.values.shuffle.each do |connection|
+        @connections.each_value do |connection|
           connection.call(*args)
         ensure
           connection.disconnect if connection.one_shot?
