@@ -45,6 +45,8 @@ module KO
 
     def app = KO::Application.instance
 
+    def _ = self
+
     def inspect
       id_str = id.nil? ? "" : "[#{id.inspect}]"
       "#<#{self.class}#{id_str} signals=#{signals.count} properties=0 children=#{children.count}>"
