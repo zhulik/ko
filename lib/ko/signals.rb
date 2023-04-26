@@ -23,8 +23,6 @@ module KO
           s.dup.tap  { _1.parent = self }
         end
       end
-
-      def emit(name, *args) = send(name).call(*args)
     end
 
     module AddSignal
