@@ -7,13 +7,9 @@ module KO
       def respond_to_missing?(name, include_private = false); end
 
       def method_missing(name, *args, **params, &)
-        sigs = signals.each.with_object({}) { |(_k, v), acc| acc[v.receiver_name] = v }
-        super unless sigs.include?(name)
+        _, signal = signals.find { _2.receiver_name == name } || super
 
-        method_name = SecureRandom.hex
-        define_singleton_method(method_name, &)
-
-        sigs[name].connect(method_name.to_sym)
+        signal.connect(&)
       end
 
       private
