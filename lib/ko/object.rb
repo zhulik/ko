@@ -46,7 +46,7 @@ module KO
 
     def inspect
       id_str = id.nil? ? "" : "[#{id.inspect}]"
-      "#<#{self.class}#{id_str} signals=#{signals.count} properties=0 children=#{children.count}>"
+      "#<#{self.class}#{id_str} signals=#{signals.count} properties=#{properties.count} children=#{children.count}>"
     end
 
     private
