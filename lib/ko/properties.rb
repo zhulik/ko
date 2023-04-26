@@ -11,7 +11,9 @@ module KO
       signal :"#{name}_changed", type
 
       define_method(name) do
-        properties[name] ||= value
+        return properties[name] if properties.key?(name)
+
+        properties[name] = value
       end
 
       define_method("#{name}=") do |new_value|
