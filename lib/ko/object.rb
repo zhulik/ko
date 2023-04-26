@@ -40,11 +40,8 @@ module KO
     end
 
     def remove_child(obj) = children.remove(obj)
-
     def [](id) = children[id]
-
     def app = KO::Application.instance
-
     def _ = self
 
     def inspect
@@ -53,6 +50,8 @@ module KO
     end
 
     private
+
+    attr_writer :id
 
     def find_parent
       binding.callers[2..].each do |caller|
