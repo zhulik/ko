@@ -2,7 +2,7 @@
 
 module KO
   module Properties
-    def property(name, type, value: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def property(name, type, value: nil, on_change: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity
       types = [type].flatten
       value ||= type.new if type.is_a?(Class)
 
@@ -22,6 +22,7 @@ module KO
         return new_value if new_value == properties[name]
 
         properties[name] = new_value
+        send(on_change) if on_change
         signals[:"#{name}_changed"].emit(new_value)
         new_value
       end
