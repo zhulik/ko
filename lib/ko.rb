@@ -3,8 +3,8 @@
 require_relative "ko/version"
 
 require "zeitwerk"
-
 require "binding_of_caller"
+require "rutie"
 
 loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect(
@@ -13,6 +13,8 @@ loader.inflector.inflect(
 loader.setup
 
 module KO
+  Rutie.new(:ko).init "Init_ko", __dir__
+
   class Error < StandardError; end
 
   class InvalidParent < Error

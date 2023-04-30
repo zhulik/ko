@@ -16,23 +16,25 @@ module KO
       end
 
       def validate_receiver!(receiver)
-        receiver = validate_receiver_type!(receiver)
+        validate_receiver_type!(receiver)
         validate_signal_arity!(receiver) if receiver.is_a?(Signal)
       end
 
       def validate_receiver_type!(receiver)
-        if receiver.is_a?(Signal) ||
-           (receiver.is_a?(Method) && receiver.receiver.is_a?(KO::Object)) ||
-           (receiver.is_a?(KO::Object) && receiver.respond_to?(@signal.receiver_name))
-          return receiver
-        end
+        name = @signal.receiver_name
+        return if receiver.respond_to?(:call) || receiver.respond_to?(name)
 
-        raise ArgumentError, "receiver must be a Signal or a KO::Object's method, given: #{receiver.class}"
+        raise ArgumentError, "receiver must be a Signal, callable or respond to #{name}: #{receiver.class}"
       end
 
       private
 
-      def types_match?(types) = types.each.with_index.all? { _1.ancestors.include?(@signal.arg_types[_2]) }
+      def types_match?(types)
+        types.each.with_index.all? do |klass, i|
+          valid_types = [@signal.arg_types[i]].flatten
+          valid_types.any? { klass.ancestors.include?(_1) }
+        end
+      end
 
       def validate_signal_arity!(signal)
         return if signal.arg_types == @signal.arg_types

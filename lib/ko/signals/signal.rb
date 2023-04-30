@@ -20,35 +20,45 @@ module KO
         @parent = obj
       end
 
-      def dup = super().tap { _1.connections.clear }
+      def dup = self.class.new(name, arg_types)
 
-      def receiver_name = "on_#{name}".to_sym
+      def receiver_name = :"on_#{name}"
 
-      def connect(receiver = nil, mode: :direct, one_shot: false)
+      def connect(receiver = nil, mode: :direct, one_shot: false, &block)
+        receiver = normalize_receiver(receiver) || block
         @validator.validate_receiver!(receiver)
+
+        raise "ALREADY CONNECTED" if @connections.include?(receiver)
 
         Connection.new(receiver, self, mode:, one_shot:).tap { @connections[receiver] = _1 }
       end
 
       def disconnect(receiver)
+        receiver = normalize_receiver(receiver)
         raise ArgumentError, "given receiver is not connected to this signal" if @connections.delete(receiver).nil?
       end
 
       def emit(*args)
         @validator.validate_args!(args)
+
         notify_subscribers(args)
       end
 
-      def inspect = "#<#{self.class}[#{name.inspect}] connections=#{@connections.count}>"
+      def inspect = "#<#{self.class}@#{object_id}[#{name.inspect}] connections=#{@connections.count}>"
 
       def call(...) = emit(...)
 
-      def notify_subscribers(args)
-        @connections.values.shuffle.each do |connection|
-          connection.call(*args)
-        ensure
-          connection.disconnect if connection.one_shot?
-        end
+      private
+
+      def notify_subscribers(args) = @connections.each_value { _1.call(*args) }
+
+      def normalize_receiver(receiver)
+        return if receiver.nil?
+        return receiver if receiver.respond_to?(:call)
+
+        return parent.method(receiver) if receiver.is_a?(Symbol)
+
+        receiver.method(receiver_name) if receiver.respond_to?(receiver_name)
       end
     end
   end

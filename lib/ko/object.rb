@@ -3,10 +3,11 @@
 module KO
   class Object
     extend Signals
+    extend Properties
 
     class << self
-      def [](id = nil, &)
-        new(id:).tap do |obj|
+      def [](id = nil, parent = nil, &)
+        new(id:, parent:).tap do |obj|
           obj.instance_exec(&) if block_given?
           obj.ready.emit
         end
@@ -39,17 +40,18 @@ module KO
     end
 
     def remove_child(obj) = children.remove(obj)
-
     def [](id) = children[id]
-
     def app = KO::Application.instance
+    def _ = self
 
     def inspect
       id_str = id.nil? ? "" : "[#{id.inspect}]"
-      "#<#{self.class}#{id_str} signals=#{signals.count} properties=0 children=#{children.count}>"
+      "#<#{self.class}#{id_str} signals=#{signals.count} properties=#{properties.count} children=#{children.count}>"
     end
 
     private
+
+    attr_writer :id
 
     def find_parent
       binding.callers[2..].each do |caller|
