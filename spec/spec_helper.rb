@@ -8,8 +8,6 @@ end
 
 require "ko"
 
-require "async/rspec"
-
 Zeitwerk::Loader.eager_load_all
 
 RSpec.configure do |config|
@@ -24,9 +22,6 @@ RSpec.configure do |config|
   end
 
   config.order = :random
-
-  config.include_context Async::RSpec::Reactor, async: true
-  config.include_context Async::RSpec::Leaks, async: true
 
   config.around do |example|
     KO::Application.new unless KO::Application.instance

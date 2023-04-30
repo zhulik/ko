@@ -14,6 +14,4 @@ group :development, :test do
   gem "rubocop-rspec", require: false
   gem "simplecov", require: false
   gem "solargraph", require: false
-
-  gem "async-rspec"
 end

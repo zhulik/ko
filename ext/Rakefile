@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+task :default do
+  system("cargo build --release", exception: true)
+end
