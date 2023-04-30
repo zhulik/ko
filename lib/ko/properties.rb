@@ -2,7 +2,7 @@
 
 module KO
   module Properties
-    def property(name, type, value: nil, on_change: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity
+    def property(name, type, value: nil, on_change: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       types = [type].flatten
       value ||= type.new if type.is_a?(Class)
 
@@ -17,7 +17,8 @@ module KO
       end
 
       define_method("#{name}=") do |new_value|
-        raise TypeError if types.none? { value.is_a?(_1) }
+        return new_value.apply(self, name) if new_value.is_a?(Binding)
+        raise TypeError if types.none? { new_value.is_a?(_1) }
 
         return new_value if new_value == properties[name]
 
@@ -29,11 +30,12 @@ module KO
     end
 
     module InstanceMethods
-      def bind(prop_name, from, from_prop_name)
-        setter = method("#{prop_name}=")
-        setter.call(from.send(from_prop_name))
+      def bind(target_or_prop_name = nil, prop_name = nil)
+        return Binding.new(self, target_or_prop_name) if target_or_prop_name.is_a?(Symbol)
 
-        from.send("#{from_prop_name}_changed").connect(setter)
+        raise ArgumentError if prop_name.nil?
+
+        Binding.new(target_or_prop_name, prop_name)
       end
 
       def assign_properties(val = {}, **props) = val.merge(props).each { send("#{_1}=", _2) }

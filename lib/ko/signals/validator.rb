@@ -16,7 +16,10 @@ module KO
       end
 
       def validate_receiver!(receiver)
-        raise ArgumentError, "receiver must respond to :call" unless receiver.respond_to?(:call)
+        unless receiver.respond_to?(:call)
+          raise ArgumentError,
+                "receiver must respond to :call. Given: #{receiver.inspect}"
+        end
 
         validate_signal_arity!(receiver) if receiver.is_a?(Signal)
       end
