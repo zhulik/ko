@@ -2,40 +2,29 @@
 
 module KO
   module Properties
-    def property(name, type, value: nil, on_change: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      types = [type].flatten
-      value ||= type.new if type.is_a?(Class)
-
-      raise TypeError if types.none? { value.is_a?(_1) }
-
-      signal :"#{name}_changed", type
+    def property(name, type, value: nil) # rubocop:disable Metrics/AbcSize
+      signal_name = :"#{name}_changed"
+      signal(signal_name, type)
 
       define_method(name) do
-        return properties[name] if properties.key?(name)
-
-        properties[name] = value
+        (properties[name] ||= Property.new(name, type, value, self, signal_name)).value
       end
 
       define_method("#{name}=") do |new_value|
-        return new_value.apply(self, name) if new_value.is_a?(Binding)
-        raise TypeError if types.none? { new_value.is_a?(_1) }
+        return new_value.bind(self, name) if new_value.is_a?(Property)
+        return properties[name].value = new_value if properties.key?(name)
 
-        return new_value if new_value == properties[name]
-
-        properties[name] = new_value
-        send(on_change) if on_change
-        signals[:"#{name}_changed"].emit(new_value)
-        new_value
+        properties[name] = Property.new(name, type, new_value, self, signal_name)
       end
     end
 
     module InstanceMethods
       def bind(target_or_prop_name = nil, prop_name = nil)
-        return Binding.new(self, target_or_prop_name) if target_or_prop_name.is_a?(Symbol)
+        return properties[target_or_prop_name] if target_or_prop_name.is_a?(Symbol)
 
         raise ArgumentError if prop_name.nil?
 
-        Binding.new(target_or_prop_name, prop_name)
+        target_or_prop_name.properties[prop_name]
       end
 
       def assign_properties(val = {}, **props) = val.merge(props).each { send("#{_1}=", _2) }

@@ -12,17 +12,17 @@ module KO
         signal.connect(&)
       end
 
-      private
-
       def signals = @signals ||= self.class.signals.transform_values(&:dup)
     end
 
     module AddSignal
       def signal(name, *arg_types)
-        signals[name.to_sym] = Signal.new(name, arg_types)
+        s = Signal.new(name, arg_types)
+        signals[name.to_sym] = s
 
         d = respond_to?(:define_method) ? :define_method : :define_singleton_method
         send(d, name) { signals[name.to_sym] }
+        s
       end
     end
 
