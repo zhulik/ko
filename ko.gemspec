@@ -20,10 +20,10 @@ Gem::Specification.new do |spec|
   # spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
   # spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
 
-  spec.files = Dir.glob("lib/**/*.rb") +
-               Dir.glob("exe/**/*") +
-               Dir.glob("Cargo*") +
-               Dir.glob("src/**/*.rs") +
+  spec.files = Dir["lib/**/*.rb"] +
+               Dir["exe/**/*"] +
+               Dir["Cargo*"] +
+               Dir["src/**/*.rs"] +
                [
                  "ext/Rakefile",
                  "ko.gemspec",

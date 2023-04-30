@@ -13,8 +13,6 @@ loader.inflector.inflect(
 loader.setup
 
 module KO
-  Rutie.new(:ko).init "Init_ko", __dir__
-
   class Error < StandardError; end
 
   class InvalidParent < Error
@@ -32,3 +30,7 @@ module KO
   class UnknownChildError < Error; end
   class SignalParentOverrideError < Error; end
 end
+
+loader.eager_load
+
+Rutie.new(:ko).init("Init_ko", __dir__)

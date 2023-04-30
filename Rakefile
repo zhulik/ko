@@ -23,4 +23,4 @@ task(check: [:check_fmt, :check_clippy, :check_rubocop])
 
 task(:compile) { cargo("build --release") }
 task(spec: :compile)
-task(default: [:spec, :rubocop])
+task(default: [:fix, :spec, :rubocop])
