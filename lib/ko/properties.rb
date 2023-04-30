@@ -36,6 +36,8 @@ module KO
         from.send("#{from_prop_name}_changed").connect(setter)
       end
 
+      def assign_properties(val = {}, **props) = val.merge(props).each { send("#{_1}=", _2) }
+
       def properties = @properties ||= {}
     end
 

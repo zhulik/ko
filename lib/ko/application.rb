@@ -7,11 +7,11 @@ module KO
       def instance = $_KO_APP
     end
 
-    def initialize(id: nil, parent: nil, &)
+    def initialize(id = nil, parent: nil, **props, &)
       raise AlreadyIitialized if $_KO_APP
 
       begin
-        super(id: id || "app", parent:)
+        super(id || "app", parent:, **props)
       rescue InvalidParent
         @parent = nil
         instance_exec(&) if block_given?

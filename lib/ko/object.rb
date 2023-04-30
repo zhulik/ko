@@ -13,9 +13,11 @@ module KO
 
     signal :ready
 
-    def initialize(id: nil, parent: nil, &)
+    def initialize(id = nil, parent: nil, **props, &)
       @id = id
       self.parent = parent || find_parent
+
+      assign_properties(props)
 
       instance_exec(&) if block_given?
       ready.emit
