@@ -44,7 +44,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - run: rake spec
+      - run: bundle exec rake spec
 
   publish:
     runs-on: ubuntu-latest
