@@ -55,10 +55,6 @@ module KO
       def normalize_receiver(receiver)
         return if receiver.nil?
         return receiver if receiver.respond_to?(:call)
-
-        return parent.method(receiver) if receiver.is_a?(Symbol)
-
-        receiver.method(receiver_name) if receiver.respond_to?(receiver_name)
       end
     end
   end

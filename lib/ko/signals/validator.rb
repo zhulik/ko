@@ -21,10 +21,7 @@ module KO
       end
 
       def validate_receiver_type!(receiver)
-        name = @signal.receiver_name
-        return if receiver.respond_to?(:call) || receiver.respond_to?(name)
-
-        raise ArgumentError, "receiver must be a Signal, callable or respond to #{name}: #{receiver.class}"
+        raise ArgumentError, "receiver must respond to call. Given #{receiver.class}" unless receiver.respond_to?(:call)
       end
 
       private

@@ -7,11 +7,7 @@ RSpec.describe KO::Signals do
     end.new
   end
 
-  let(:receiver) do
-    Class.new(KO::Object) do
-      def on_something_changed = nil
-    end.new
-  end
+  let(:receiver) { proc {} }
 
   describe "emitting signals" do
     subject { object.something_changed.emit(*args) }
@@ -20,7 +16,7 @@ RSpec.describe KO::Signals do
       let(:args) { ["blah", "blah"] }
 
       it "notifies subscribers" do
-        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
+        expect(receiver).to receive(:call) # rubocop:disable RSpec/MessageSpies
         object.something_changed.connect(receiver)
         subject
       end
@@ -31,7 +27,7 @@ RSpec.describe KO::Signals do
       let(:args) { ["blah", my_string.new("123")] }
 
       it "notifies subscribers" do
-        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
+        expect(receiver).to receive(:call) # rubocop:disable RSpec/MessageSpies
         object.something_changed.connect(receiver)
         subject
       end
