@@ -5,9 +5,6 @@ edition = "2021"
 
 [dependencies]
 rutie = {version="0.8"}
-glam = { version = "0.24" }
-lazy_static = {version="1.4.0"}
-rand = {version="0.8.5"}
 
 [lib]
 name = "ko"
