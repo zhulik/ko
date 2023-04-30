@@ -14,11 +14,7 @@ module KO
 
       private
 
-      def signals
-        @signals ||= self.class.signals.transform_values do |s|
-          s.dup.tap  { _1.parent = self }
-        end
-      end
+      def signals = @signals ||= self.class.signals.transform_values(&:dup)
     end
 
     module AddSignal

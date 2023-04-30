@@ -6,21 +6,19 @@ module KO
     extend Properties
 
     class << self
-      def [](id = nil, parent = nil, &)
-        new(id:, parent:).tap do |obj|
-          obj.instance_exec(&) if block_given?
-          obj.ready.emit
-        end
-      end
+      def [](...) = new(...)
     end
 
     attr_reader :id, :parent
 
     signal :ready
 
-    def initialize(id: nil, parent: nil)
+    def initialize(id: nil, parent: nil, &)
       @id = id
       self.parent = parent || find_parent
+
+      instance_exec(&) if block_given?
+      ready.emit
     end
 
     def children = @children ||= Children.new
@@ -53,13 +51,7 @@ module KO
 
     attr_writer :id
 
-    def find_parent
-      binding.callers[2..].each do |caller|
-        obj = caller.receiver
-        return obj if can_be_parent?(obj)
-      end
-      raise KO::InvalidParent
-    end
+    def find_parent = binding.callers[2..].find { can_be_parent?(_1.receiver) }&.receiver
 
     def can_be_parent?(obj)
       obj.is_a?(KO::Object) && obj != self

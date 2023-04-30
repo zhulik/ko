@@ -3,34 +3,27 @@
 module KO
   module Signals
     class Signal
-      attr_reader :name, :arg_types, :connections, :parent
+      attr_reader :name, :arg_types, :connections
 
       def initialize(name, arg_types)
         @name = name
         @arg_types = arg_types
 
-        @validator = Validator.new(self)
+        @validator = Validator.new(arg_types)
         @connections = {}
       end
 
-      def parent=(obj)
-        raise KO::SignalParentOverrideError unless @parent.nil?
-        raise KO::InvalidParent unless obj.is_a?(KO::Object)
+      def dup = self.class.new(@name, arg_types)
 
-        @parent = obj
-      end
+      def receiver_name = :"on_#{@name}"
 
-      def dup = self.class.new(name, arg_types)
-
-      def receiver_name = :"on_#{name}"
-
-      def connect(receiver = nil, mode: :direct, one_shot: false, &block)
+      def connect(receiver = nil, one_shot: false, &block)
         receiver = normalize_receiver(receiver) || block
         @validator.validate_receiver!(receiver)
 
         raise "ALREADY CONNECTED" if @connections.include?(receiver)
 
-        Connection.new(receiver, self, mode:, one_shot:).tap { @connections[receiver] = _1 }
+        Connection.new(receiver, one_shot:).tap { @connections[receiver] = _1 }
       end
 
       def disconnect(receiver)
@@ -41,7 +34,10 @@ module KO
       def emit(*args)
         @validator.validate_args!(args)
 
-        notify_subscribers(args)
+        @connections.each_value do |conn|
+          conn.call(*args)
+          disconnect(conn.receiver) if conn.one_shot?
+        end
       end
 
       def inspect = "#<#{self.class}@#{object_id}[#{name.inspect}] connections=#{@connections.count}>"
@@ -49,8 +45,6 @@ module KO
       def call(...) = emit(...)
 
       private
-
-      def notify_subscribers(args) = @connections.each_value { _1.call(*args) }
 
       def normalize_receiver(receiver)
         return if receiver.nil?

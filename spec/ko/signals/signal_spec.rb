@@ -3,11 +3,7 @@
 RSpec.describe KO::Signals::Signal do
   let(:signal) { described_class.new(:something_changed, [String, String]) }
 
-  let(:receiver) do
-    Class.new(KO::Object) do
-      def on_something_changed(_a, _b) = nil # rubocop:disable Naming/MethodParameterName
-    end.new
-  end
+  let(:receiver) { instance_double(Proc, call: true) }
 
   describe "#connect" do
     subject { signal.connect(receiver) }
@@ -23,7 +19,7 @@ RSpec.describe KO::Signals::Signal do
     end
 
     context "when connected to a method" do
-      let(:receiver) { super().method(:on_something_changed) }
+      let(:receiver) { super().method(:call) }
 
       it "connects" do
         expect { subject }.to change { signal.connections.count }.from(0).to(1)
@@ -51,7 +47,7 @@ RSpec.describe KO::Signals::Signal do
         let(:receiver) { described_class.new(:another_signal, [String]) }
 
         it "raises an exception" do
-          expect { subject }.to raise_error(ArgumentError)
+          expect { subject }.to raise_error(TypeError)
         end
       end
     end
@@ -60,7 +56,7 @@ RSpec.describe KO::Signals::Signal do
       let(:receiver) { "foo" }
 
       it "raises an exception" do
-        expect { subject }.to raise_error ArgumentError
+        expect { subject }.to raise_error(ArgumentError)
       end
     end
   end
@@ -106,9 +102,9 @@ RSpec.describe KO::Signals::Signal do
 
     context "when has one shot connection" do
       it "notifies receiver" do
-        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
         signal.connect(receiver, one_shot: true)
         subject
+        expect(receiver).to have_received(:call)
       end
 
       it "removes the connection" do
@@ -121,9 +117,9 @@ RSpec.describe KO::Signals::Signal do
 
     context "when connected to an object" do
       it "notifies receiver" do
-        expect(receiver).to receive(:on_something_changed) # rubocop:disable RSpec/MessageSpies
         signal.connect(receiver)
         subject
+        expect(receiver).to have_received(:call)
       end
     end
 
@@ -131,43 +127,10 @@ RSpec.describe KO::Signals::Signal do
       let(:another_signal) { described_class.new(:another_signal, [String, String]) }
 
       it "notifies receiver" do
-        expect(receiver).to receive(:on_another_signal).with("blah", "blah") # rubocop:disable RSpec/MessageSpies
-
         signal.connect(another_signal)
         another_signal.connect(receiver)
         subject
-      end
-    end
-  end
-
-  describe "#parent=" do
-    subject { signal.parent = obj }
-
-    context "when given object is KO::Object" do
-      let(:obj) { KO::Object.new }
-
-      it "assigns a parent" do
-        expect { subject }.to change(signal, :parent).from(nil).to(obj)
-      end
-    end
-
-    context "when given object is not a KO::Object" do
-      let(:obj) { Object.new }
-
-      it "raises" do
-        expect { subject }.to raise_error(KO::InvalidParent)
-      end
-    end
-
-    context "when signal already has parent" do
-      let(:obj) { KO::Object.new }
-
-      before do
-        signal.parent = obj
-      end
-
-      it "raises" do
-        expect { subject }.to raise_error(KO::SignalParentOverrideError)
+        expect(receiver).to have_received(:call).with("blah", "blah")
       end
     end
   end

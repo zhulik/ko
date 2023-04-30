@@ -7,7 +7,7 @@ RSpec.describe KO::Signals do
     end.new
   end
 
-  let(:receiver) { proc {} }
+  let(:receiver) { instance_double(Proc, call: true) }
 
   describe "emitting signals" do
     subject { object.something_changed.emit(*args) }
@@ -16,9 +16,9 @@ RSpec.describe KO::Signals do
       let(:args) { ["blah", "blah"] }
 
       it "notifies subscribers" do
-        expect(receiver).to receive(:call) # rubocop:disable RSpec/MessageSpies
         object.something_changed.connect(receiver)
         subject
+        expect(receiver).to have_received(:call)
       end
     end
 
@@ -27,9 +27,9 @@ RSpec.describe KO::Signals do
       let(:args) { ["blah", my_string.new("123")] }
 
       it "notifies subscribers" do
-        expect(receiver).to receive(:call) # rubocop:disable RSpec/MessageSpies
         object.something_changed.connect(receiver)
         subject
+        expect(receiver).to have_received(:call)
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe KO::Signals do
       it "raises an exception" do
         expect do
           subject
-        end.to raise_error(KO::EmitError, "expected args: [String, String]. given: [String, Integer]")
+        end.to raise_error(TypeError)
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe KO::Signals do
       it "raises an exception" do
         expect do
           subject
-        end.to raise_error(KO::EmitError, "expected args: [String, String]. given: [String]")
+        end.to raise_error(TypeError)
       end
     end
 
@@ -59,7 +59,7 @@ RSpec.describe KO::Signals do
       it "raises an exception" do
         expect do
           subject
-        end.to raise_error(KO::EmitError, "expected args: [String, String]. given: [String, String, String]")
+        end.to raise_error(TypeError)
       end
     end
   end
