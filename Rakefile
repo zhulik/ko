@@ -4,6 +4,8 @@ require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
 
+require "ko"
+
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new
 
@@ -24,3 +26,28 @@ task(check: [:check_fmt, :check_clippy, :check_rubocop])
 task(:compile) { cargo("build --release") }
 task(spec: :compile)
 task(default: [:fix, :spec, :rubocop])
+
+task :benchmark do
+  require "benchmark/ips"
+
+  arg = "arg"
+  s = KO::Signals::Signal.new(:sig, [String])
+
+  r1, r2 = Array.new(2) { -> { _1 } }
+
+  s.connect(r1)
+  s.connect(r2)
+
+  Benchmark.ips do |x|
+    x.config(time: 5, warmup: 2)
+
+    x.report("direct call") do
+      r1.call(arg)
+      r2.call(arg)
+    end
+
+    x.report("signal call") { s.emit(arg) }
+
+    x.compare!
+  end
+end

@@ -6,6 +6,7 @@ source "https://rubygems.org"
 gemspec
 
 group :development, :test do
+  gem "benchmark-ips", require: false
   gem "overcommit", require: false
   gem "rake", require: false
   gem "rspec", require: false
