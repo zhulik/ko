@@ -42,14 +42,6 @@ RSpec.describe KO::Signals::Signal do
           expect(subject).to be_an_instance_of(KO::Signals::Connection)
         end
       end
-
-      context "when signal's arity does not fit" do
-        let(:receiver) { described_class.new(:another_signal, [String]) }
-
-        it "raises an exception" do
-          expect { subject }.to raise_error(TypeError)
-        end
-      end
     end
 
     context "when connecting to a non-receiver" do

@@ -7,6 +7,8 @@ require "binding_of_caller"
 require "rutie"
 require "memery"
 
+require "dry-types"
+
 loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect(
   "ko" => "KO"

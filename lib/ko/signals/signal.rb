@@ -13,17 +13,17 @@ module KO
         @connections = {}
       end
 
-      def dup = self.class.new(@name, arg_types)
+      def dup = self.class.new(@name, @arg_types)
 
       def receiver_name = :"on_#{@name}"
 
       def connect(receiver = nil, one_shot: false, &block)
-        receiver = normalize_receiver(receiver) || block
-        @validator.validate_receiver!(receiver)
+        receiver ||= block
+        raise ArgumentError unless receiver.respond_to?(:call)
 
         raise "ALREADY CONNECTED" if @connections.include?(receiver)
 
-        Connection.new(receiver, one_shot:).tap { @connections[receiver] = _1 }
+        @connections[receiver] = Connection.new(receiver, one_shot:)
       end
 
       def disconnect(receiver)
