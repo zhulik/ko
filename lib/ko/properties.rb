@@ -2,19 +2,19 @@
 
 module KO
   module Properties
-    def property(name, type, value: nil) # rubocop:disable Metrics/AbcSize
+    def property(name, type) # rubocop:disable Metrics/AbcSize
       signal_name = :"#{name}_changed"
       signal(signal_name, type)
 
       define_method(name) do
-        (properties[name] ||= Property.new(name, type, value, self, signal_name)).value
+        (properties[name] ||= Property.new(name, type, signals[signal_name])).value
       end
 
       define_method("#{name}=") do |new_value|
         return new_value.bind(self, name) if new_value.is_a?(Property)
         return properties[name].value = new_value if properties.key?(name)
 
-        properties[name] = Property.new(name, type, new_value, self, signal_name)
+        properties[name] = Property.new(name, type, signals[signal_name]) { new_value }
       end
     end
 

@@ -5,14 +5,13 @@ module KO
     class Property
       attr_reader :value
 
-      def initialize(name, type, value, owner, signal)
+      def initialize(name, type, signal, &block)
         @name = name
-        @types = [type].flatten
+        @type = type
 
-        @owner = owner
-        @signal = owner.signals[signal]
+        @signal = signal
 
-        self.value = value.nil? && type.is_a?(Class) ? type.new : value
+        self.value = block&.call || type[]
       end
 
       def bind(target, property)
@@ -22,9 +21,11 @@ module KO
       end
 
       def value=(val)
-        raise TypeError if @types.none? { val.is_a?(_1) }
+        val = @type[val]
 
         @signal.emit(@value = val) if val != @value
+      rescue StandardError
+        raise TypeError, "#{@name} expected: #{@type}, given: #{val.inspect}"
       end
     end
   end
