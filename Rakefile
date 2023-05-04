@@ -4,8 +4,6 @@ require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
 
-require "ko"
-
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new
 
@@ -28,6 +26,7 @@ task(spec: :compile)
 task(default: [:fix, :spec, :rubocop])
 
 task :benchmark do
+  require "ko"
   require "benchmark/ips"
 
   arg = "arg"
