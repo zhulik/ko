@@ -9,12 +9,13 @@ module KO
       def [](...) = new(...)
     end
 
-    attr_reader :id, :parent
+    attr_reader :id, :parent, :uuid
 
     signal :ready
 
     def initialize(id = nil, parent: nil, **props, &)
       @id = id
+      @uuid = SecureRandom.uuid
       self.parent = parent || find_parent
 
       assign_properties(props)
