@@ -5,6 +5,7 @@ require_relative "ko/version"
 require "zeitwerk"
 require "binding_of_caller"
 require "rutie"
+require "memery"
 
 loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect(

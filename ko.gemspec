@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
   spec.extensions << "ext/Rakefile"
 
   spec.add_dependency "binding_of_caller", "~> 1.0.0"
+  spec.add_dependency "memery", "~> 1.4"
   spec.add_dependency "rutie", "~> 0.0.4"
   spec.add_dependency "zeitwerk", "~> 2.6.0"
 

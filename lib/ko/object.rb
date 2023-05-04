@@ -24,7 +24,7 @@ module KO
       ready.emit
     end
 
-    def children = @children ||= Children.new
+    memoize def children = Children.new
 
     def parent=(obj)
       raise KO::InvalidParent unless can_be_parent?(obj)

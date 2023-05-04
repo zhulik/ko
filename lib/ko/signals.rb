@@ -2,7 +2,10 @@
 
 module KO
   module Signals
+    include Memery
+
     module InstanceMethods
+      include Memery
       # TODO: write me!
       def respond_to_missing?(name, include_private = false); end
 
@@ -12,7 +15,7 @@ module KO
         signal.connect(&)
       end
 
-      def signals = @signals ||= self.class.signals.transform_values(&:dup)
+      memoize def signals = self.class.signals.transform_values(&:dup)
     end
 
     module AddSignal
@@ -43,6 +46,6 @@ module KO
       child.signals.merge!(signals)
     end
 
-    def signals = @signals ||= {}
+    memoize def signals = {}
   end
 end

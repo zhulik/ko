@@ -19,6 +19,8 @@ module KO
     end
 
     module InstanceMethods
+      include Memery
+
       def bind(target_or_prop_name = nil, prop_name = nil)
         return properties[target_or_prop_name] if target_or_prop_name.is_a?(Symbol)
 
@@ -29,7 +31,7 @@ module KO
 
       def assign_properties(val = {}, **props) = val.merge(props).each { send("#{_1}=", _2) }
 
-      def properties = @properties ||= {}
+      memoize def properties = {}
     end
 
     def self.extended(base)
