@@ -3,7 +3,7 @@
 RSpec.describe KO::Signals do
   let(:object) do
     Class.new(KO::Object) do
-      signal :something_changed, String, String
+      signal :something_changed, KO::T::Coercible::String, KO::T::String
     end.new
   end
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe KO::Signals::Signal do
-  let(:signal) { described_class.new(:something_changed, [String, String]) }
+  let(:signal) { described_class.new(:something_changed, [KO::T::String, KO::T::String]) }
 
   let(:receiver) { instance_double(Proc, call: true) }
 
@@ -116,7 +116,7 @@ RSpec.describe KO::Signals::Signal do
     end
 
     context "when connected to a signal" do
-      let(:another_signal) { described_class.new(:another_signal, [String, String]) }
+      let(:another_signal) { described_class.new(:another_signal, [KO::T::String, KO::T::String]) }
 
       it "notifies receiver" do
         signal.connect(another_signal)

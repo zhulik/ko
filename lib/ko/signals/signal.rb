@@ -9,7 +9,6 @@ module KO
         @name = name
         @arg_types = arg_types
 
-        @validator = Validator.new(arg_types)
         @connections = {}
       end
 
@@ -32,7 +31,7 @@ module KO
       end
 
       def emit(*args)
-        @validator.validate_args!(args)
+        validate_args!(args)
 
         @connections.each_value do |conn|
           conn.call(*args)
@@ -49,6 +48,12 @@ module KO
       def normalize_receiver(receiver)
         return if receiver.nil?
         return receiver if receiver.respond_to?(:call)
+      end
+
+      def validate_args!(args)
+        return if @arg_types.count == args.count && @arg_types.zip(args).each.all? { _1.valid?(_2) }
+
+        raise TypeError, "expected args: #{@arg_ypes}. given: #{args}"
       end
     end
   end
